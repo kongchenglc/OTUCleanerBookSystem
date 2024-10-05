@@ -70,6 +70,8 @@ This system is designed to connect employers (homeowners or landlords) with clea
 - **Receive Payments**: Get paid for completed services.
 - **Review and Rate Employers**: Leave reviews and rate the employer after a job.
 
+![usercases](/doc/usercase.png)
+
 
 ## Data Structure
 
