@@ -133,6 +133,9 @@ This system is designed to connect employers (homeowners or landlords) with clea
 
 ## Technology Stack
 Front-end: JavaScript, React, Antd
+
 Back-end: Node.js, Koa2
+
 Database: MongoDB
+
 Cloud Service: AWS
