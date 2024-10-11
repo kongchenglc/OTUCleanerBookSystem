@@ -75,60 +75,60 @@ This system is designed to connect employers (homeowners or landlords) with clea
 
 ## Data Structure
 
-### 1. **Employer (雇主)**
+### 1. **Employer**
 
 ```plaintext
-- id: Number (雇主 ID)
-- name: String (雇主姓名)
-- email: String (雇主电子邮件)
-- address: String (雇主住址)
-- bookings: Array<Booking> (雇主的预订列表)
+- id: Number
+- name: String
+- email: String
+- address: String
+- bookings: Array<Booking>
 ```
 
-### 2. **Cleaner (清洁工)**
+### 2. **Cleaner**
 
 ```plaintext
-- id: Number (清洁工 ID)
-- name: String (清洁工姓名)
-- email: String (清洁工电子邮件)
-- location: String (清洁工服务地点)
-- hourlyRate: Number (清洁工小时费率)
-- availability: Array<TimeSlot> (清洁工的可用时间)
-- bookings: Array<Booking> (清洁工的预定列表)
+- id: Number
+- name: String
+- email: String
+- location: String
+- hourlyRate: Number
+- availability: Array<TimeSlot>
+- bookings: Array<Booking>
 ```
 
-### 3. **Booking (预定)**
+### 3. **Booking**
 
 ```plaintext
-- id: Number (预定 ID)
-- employerId: Number (雇主 ID)
-- cleanerId: Number (清洁工 ID)
-- date: String (预定日期，格式为 YYYY-MM-DD)
-- time: String (预定时间，格式为 HH:mm)
-- duration: Number (服务时长，单位小时)
-- price: Number (总价格)
-- status: String (预定状态，例如 'pending', 'accepted', 'rejected', 'completed')
+- id: Number
+- employerId: Number
+- cleanerId: Number
+- date: String
+- time: String
+- duration: Number
+- price: Number
+- status: String (eg: 'pending', 'accepted', 'rejected', 'completed')
 ```
 
-### 4. **Review (评论与评分)**
+### 4. **Review**
 
 ```plaintext
-- id: Number (评论 ID)
-- bookingId: Number (关联的预定 ID)
-- reviewerId: Number (评论者 ID，可能是雇主或清洁工)
-- revieweeId: Number (被评论者 ID)
-- rating: Number (评分，范围为 1-5)
-- comment: String (评论内容)
+- id: Number
+- bookingId: Number
+- reviewerId: Number
+- revieweeId: Number
+- rating: Number
+- comment: String
 ```
 
-### 5. **Notification (通知)**
+### 5. **Notification**
 
 ```plaintext
-- id: Number (通知 ID)
-- userId: Number (接收通知的用户 ID)
-- message: String (通知内容)
-- createdAt: String (通知创建时间，格式为 YYYY-MM-DDTHH:mm:ss)
-- read: Boolean (是否已读，默认为 false)
+- id: Number
+- userId: Number
+- message: String
+- createdAt: String (YYYY-MM-DDTHH:mm:ss)
+- read: Boolean
 ```
 
 ## Technology Stack
