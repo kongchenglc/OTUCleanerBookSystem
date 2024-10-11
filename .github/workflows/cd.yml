@@ -4,14 +4,14 @@ on:
     branches:
       - master
     paths:
-      - 'backend/**'
-      - 'frontend/**'
+      - './backend/**'
+      - './frontend/**'
   pull_request:
     branches:
       - master
     paths:
-      - 'backend/**'
-      - 'frontend/**'
+      - './backend/**'
+      - './frontend/**'
 jobs:
   backend-test:
     runs-on: ubuntu-latest
