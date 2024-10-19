@@ -13,7 +13,7 @@ async function connectDB() {
     try {
         await client.connect();
         console.log('Connected to MongoDB Atlas');
-        const db = client.db('testdb');
+        const db = client.db('sample_mflix');
 
         app.context.db = db;
     } catch (err) {
