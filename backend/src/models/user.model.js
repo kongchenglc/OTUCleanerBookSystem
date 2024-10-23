@@ -111,6 +111,9 @@ const userSchema = new mongoose.Schema(
     refreshToken:{
       type: string
     }
+  },
+  {
+    timestamps:true
   }
 )
 
