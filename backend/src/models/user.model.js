@@ -1,4 +1,6 @@
 import mongoose, {Schema} from "mongoose";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 
 const userSchema = new mongoose.Schema(
   {
@@ -116,5 +118,53 @@ const userSchema = new mongoose.Schema(
     timestamps:true
   }
 )
+// pre hook "functionalities , then callback "
+// arrow function does not have this reference
+// thats why using function
+userSchema.pre("save", async function (next){
+  if(!this.isModified("password")) return next()
+    // encrypt the password
+  this.password = bcrypt.hash(this.password, 10)
+  next()
+})
+
+// designing a custom method , add a custom method in userSchema 
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password)
+}
+
+// method to generate access token
+userSchema.methods.generateAccessToken = function(){
+  return jwt.sign(
+    {
+      // payload name - database name
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+      fullName: this.fullName
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+    }
+  )
+}
+
+
+// refresh token is used many times, so we only pass id 
+userSchema.methods.generateRefreshToken = function(){
+  return jwt.sign(
+    {
+      // payload name - database name
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+    }
+  )
+}
+
+userSchema.method.generateRefreshToken = function(){}
 
 export default User = mongoose.model("User", userSchema)
