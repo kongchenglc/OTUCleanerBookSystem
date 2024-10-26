@@ -20,4 +20,9 @@ app.use(express.static("public"))
 // access and use user cookies, apply CRUD operations
 app.use(cookieParser())
 
+// routes import 
+import userRouter from './routes/user.routes.js'
+
+//routes declartion
+app.use("/api/v1/users",userRouter)
 export default app
