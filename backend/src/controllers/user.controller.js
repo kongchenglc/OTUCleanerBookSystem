@@ -1,7 +1,7 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js'
 import {User} from '../models/user.model.js'
-import { uploadOnCLoudinary } from '../utils/cloudinary.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import {ApiResponse} from '../utils/ApiResponse.js'
 
 const registerUser = asyncHandler(async( req,res) => {
@@ -25,7 +25,7 @@ const registerUser = asyncHandler(async( req,res) => {
   }
 
   // if their is existed user 
-  const existedUser =  User.findOne({
+  const existedUser =  await User.findOne({
     $or: [{username},{email}]
   })
 
@@ -34,22 +34,25 @@ const registerUser = asyncHandler(async( req,res) => {
   }
 
 // middleware - add more fields in request like files add
-  const avatarLocalPath = req.files?.avatar[0]?.path
+  // const avatarLocalPath = req.files?.avatar[0]?.path || null;
+
+  // changes to remove avatar
+  const avatarLocalPath = req.files?.avatar?.[0]?.path || null;
   
-  if(!avatarLocalPath){
-    throw new ApiError(400,"Avatar files is required")
-  }
+  // if(!avatarLocalPath){
+  //   throw new ApiError(400,"Avatar files is required")
+  // }
   
-  const avatar = await uploadOnCLoudinary(avatarLocalPath)
-  await uploadOnCLoudinary(coverImage )
+  // const avatar = await uploadOnCloudinary(avatarLocalPath)
+  // await uploadOnCloudinary(coverImage)
   
-  if(!avatar) {
-    throw new ApiError(400,'Avatar file is required')
-  }
+  // if(!avatar) {
+  //   throw new ApiError(400,'Avatar file is required')
+  // }
 
   const user = await User.create({
-    fullName,
-    avatar: avatar.url,
+    
+    // avatar: avatar.url,
     // find image from the url if not their  keep it empty
     email,
     password,

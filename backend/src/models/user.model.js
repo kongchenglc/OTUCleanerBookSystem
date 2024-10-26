@@ -21,53 +21,53 @@ const userSchema = new mongoose.Schema(
     },
     firstName: {
       type: String,
-      required: true,
+      required: false,
       lowercase: true,
       trim: true
     },
     lastName: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       index: true
     },
-    avtar: {
-      type: String,
-      required: true
-    },
+    // avatar: {
+    //   type: String,
+    //   required: true
+    // },
     password:{
       type: String,
       required: [true, 'Password is required'],
     },
     phone: {
       type:String,
-      required: true
+      required: false
     },
     address:{
       street:{
         type: String,
-        required: true
+        required: false
       },
       city:{
         type: String,
-        required: true,
+        required: false,
       },
       state:{
         type: String,
-        required: true,
+        required: false,
       },
       zipCode:{
         type:String,
-        required: true
+        required: false
       }, 
       country: {
         type: String,
-        required: true
+        required: false
       }
     },
-    profilePicture:{
-      type:String,
-    },
+    // profilePicture:{
+    //   type:String,
+    // },
     dateJoined:{
       type: Date,
       default: Date.now
