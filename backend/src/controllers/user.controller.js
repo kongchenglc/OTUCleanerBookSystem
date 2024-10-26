@@ -14,7 +14,7 @@ const registerUser = asyncHandler(async( req,res) => {
   // remove refresh token and access token form the field 
   // remove password from the response 
   // check the user created or not (null)
-  // return res 
+  // return res
   
   const {username, email, firstName, lastName, password } =  req.body
   console.log("email",email)
