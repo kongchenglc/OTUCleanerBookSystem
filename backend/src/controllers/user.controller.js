@@ -110,7 +110,7 @@ const loginUser = asyncHandler(async (req,res) =>{
 
   const {email, username, password } = req.body
 
-  if(!username || !email){
+  if(!(username || email)){
     throw new ApiError(400, "username or password is required")
   }
 
@@ -123,7 +123,7 @@ const loginUser = asyncHandler(async (req,res) =>{
   }
 //  from the schema defined -- created custom generated functions 
   const isPasswordValid = await user.isPasswordCorrect(password)
-
+  console.log({isPasswordValid})
   if(!isPasswordValid){
     throw new ApiError(401, "Invalid user credentials")
   }

@@ -2,7 +2,7 @@ import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
   {
     username: {
       type: String,
@@ -122,7 +122,7 @@ const userSchema = new mongoose.Schema(
 // arrow function does not have this reference
 // thats why using function
 userSchema.pre("save", async function (next){
-  if(!this.isModified("password")) return next()
+  if(!this.isModified("password")) return next();
     // encrypt the password
   this.password = await bcrypt.hash(this.password, 10)
   next()
@@ -130,6 +130,7 @@ userSchema.pre("save", async function (next){
 
 // designing a custom method , add a custom method in userSchema 
 userSchema.methods.isPasswordCorrect = async function (password) {
+  console.log({password},this.password)
   return await bcrypt.compare(password, this.password)
 }
 
@@ -165,6 +166,5 @@ userSchema.methods.generateRefreshToken = function(){
   )
 }
 
-userSchema.method.generateRefreshToken = function(){}
 
 export const User = mongoose.model("User", userSchema)
