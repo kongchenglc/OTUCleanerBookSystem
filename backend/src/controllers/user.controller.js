@@ -16,10 +16,11 @@ const registerUser = asyncHandler(async( req,res) => {
   // check the user created or not (null)
   // return res
   
-  const {username, email, firstName, lastName, password } =  req.body
+  const {username, email, firstName, lastName, password, rating } =  req.body
   console.log("email",email)
+  console.log("rating", rating)
   
-  if([firstName, lastName, email, username].some((field) => field?.trim() === '' )
+  if([firstName, lastName, email, username, rating].some((field) => field?.trim() === '' )
   ) {
     throw new ApiError(400,'All fields are compulsory and required')
   }
@@ -54,9 +55,12 @@ const registerUser = asyncHandler(async( req,res) => {
     
     // avatar: avatar.url,
     // find image from the url if not their  keep it empty
+    // firstName,
+    // lastName,
     email,
     password,
-    username: username.toLowerCase()
+    username: username.toLowerCase(),
+    rating
     // 
   })
   // using .select to chain the things we want 
@@ -74,6 +78,18 @@ const registerUser = asyncHandler(async( req,res) => {
   // res.status(200).json({
   //   message: "ok"  
   // })
+})
+
+const loginUser = asyncHandler(async (req,res) =>{
+  // req body -> data
+  // username or mail 
+  // find the user
+  // password check
+  // access and refresh token 
+  // send cookie
+
+  const {email, username, password } = req.body
+
 })
 
 export {registerUser}
