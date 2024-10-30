@@ -121,12 +121,12 @@ const userSchema = new Schema(
 // pre hook "functionalities , then callback "
 // arrow function does not have this reference
 // thats why using function
-userSchema.pre("save", async function (next){
-  if(!this.isModified("password")) return next();
-    // encrypt the password
-  this.password = await bcrypt.hash(this.password, 10)
-  next()
-})
+// userSchema.pre("save", async function (next){
+//   if(!this.isModified("password")) return next();
+//     // encrypt the password
+//   this.password = await bcrypt.hash(this.password, 10)
+//   next()
+// })
 
 // designing a custom method , add a custom method in userSchema 
 userSchema.methods.isPasswordCorrect = async function (password) {

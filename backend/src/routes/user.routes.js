@@ -7,12 +7,12 @@ const router = Router()
 
 router.route("/register").post(
   // injecting a middleware before registering user 
-  upload.fields([
-    {
-      name:"avatar",
-      maxCount:1
-    }
-  ]),
+  // upload.fields([
+  //   {
+  //     name:"avatar",
+  //     maxCount:1
+  //   }
+  // ]),
   registerUser
 )
 
