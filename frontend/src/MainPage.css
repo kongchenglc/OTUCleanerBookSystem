@@ -1,0 +1,18 @@
+/* MainPage.css */
+.main-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+
+.content {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.filter-section {
+  overflow-y: auto; /* 启用垂直滚动 */
+  max-height: 100%;
+}

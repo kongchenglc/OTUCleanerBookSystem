@@ -21,12 +21,12 @@ export default () => {
 
     try {
 
-      const response = await fetch('http://3.142.76.164:8080/auth/register', {
+      const response = await fetch('#', {//TODO: add the backend URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, lastname, firstname, email }),
       });
 
       if (response.ok) {
@@ -35,6 +35,7 @@ export default () => {
       } else {
         const errorData = await response.json();
         message.error(`Registration failed: ${errorData.message}`);
+        navigate('/');//TODO: remove this line
       }
     } catch (error) {
       message.error('Registration request failed, please try again later.');

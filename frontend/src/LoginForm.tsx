@@ -37,16 +37,16 @@ export default () => {
         localStorage.setItem('authToken', data.token);
 
         message.success('Login Successed！');
-        navigate('/list');  // 登录成功后跳转到列表页面
+        navigate('/mainForCleaner');  // 登录成功后跳转到列表页面
       } else {
         // 登录失败，显示后端返回的错误消息
         message.error('Login failed: the user name or password is incorrect');
-        navigate('/list');//TODO: remove this line
+        navigate('/mainForCleaner');//TODO: remove this line
       }
     } catch (error) {
       // 捕获错误，显示错误信息
       message.error(`Login request failed: ${error}`);
-      navigate('/list');//TODO: remove this line
+      navigate('/mainForCleaner');//TODO: remove this line
     }
   };
 
@@ -58,8 +58,8 @@ export default () => {
   return (
     <ProConfigProvider hashed={false}>
       <LoginForm
-        title="Post Your Blog "
-        subTitle="Open Source Sharing Article Site"
+        title="OTU Cleaner Book System "
+        subTitle="Open Source Cleaner Book Web App"
         onFinish={handleLogin}  
         submitter={{
           render: (props, dom) => {
@@ -73,6 +73,18 @@ export default () => {
                 >
                   Login
                 </Button>
+              
+                <Button
+                  type="primary"
+                  key="login"
+                  onClick={() => navigate('/list')}
+                  style={{ marginRight: 10 }}
+                >
+                  landlord page
+                </Button>
+                
+
+
                 <Button
                   type="default"
                   key="register"
