@@ -17,11 +17,10 @@ export default () => {
   const navigate = useNavigate();  // 使用 useNavigate 来实现页面跳转
 
   const handleRegister = async (values: RegisterFormValues) => {
-    const { username, password } = values;
+    const { username, password, lastname, firstname, email } = values; // 解构所有字段
 
     try {
-
-      const response = await fetch('#', {//TODO: add the backend URL
+      const response = await fetch('http://3.142.76.164:8000/api/v1/users/register', { //TODO: add the backend URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +34,6 @@ export default () => {
       } else {
         const errorData = await response.json();
         message.error(`Registration failed: ${errorData.message}`);
-        navigate('/');//TODO: remove this line
       }
     } catch (error) {
       message.error('Registration request failed, please try again later.');

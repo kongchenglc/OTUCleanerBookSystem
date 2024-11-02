@@ -11,7 +11,7 @@ export default () => {
   const navigate = useNavigate();  // 使用 useNavigate 来实现页面跳转
 
   // 模拟后端API地址 (假设后端已经提供此API)
-  const API_URL = '';//'http://3.142.76.164:8080/auth/login';
+  const API_URL = 'http://3.142.76.164:8000/api/v1/users/login';
 
   // 处理登录
   const handleLogin = async (values: any) => {
@@ -32,7 +32,7 @@ export default () => {
       const data = await response.json();
 
       // 检查后端是否返回了 token
-      if (response.ok && data.token) {
+      if (response.ok) {
         // 登录成功，存储 token 到 localStorage
         localStorage.setItem('authToken', data.token);
 
@@ -40,13 +40,14 @@ export default () => {
         navigate('/mainForCleaner');  // 登录成功后跳转到列表页面
       } else {
         // 登录失败，显示后端返回的错误消息
-        message.error('Login failed: the user name or password is incorrect');
-        navigate('/mainForCleaner');//TODO: remove this line
+        const errorMessage = data.message || 'Login failed: the username or password is incorrect';
+        message.error(errorMessage);
+        //navigate('/mainForCleaner');//TODO: remove this line
       }
     } catch (error) {
       // 捕获错误，显示错误信息
       message.error(`Login request failed: ${error}`);
-      navigate('/mainForCleaner');//TODO: remove this line
+      //navigate('/mainForCleaner');//TODO: remove this line
     }
   };
 
