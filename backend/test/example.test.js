@@ -2,6 +2,6 @@ import assert from 'assert';
 
 describe('Example Test', () => {
   it('should return true', () => {
-    assert.strictEqual(true, 0);
+    assert.strictEqual(true, true);
   });
 });
