@@ -77,7 +77,7 @@ export default () => {
               
                 <Button
                   type="primary"
-                  key="login"
+                  key="landloardlogin"
                   onClick={() => navigate('/list')}
                   style={{ marginRight: 10 }}
                 >
