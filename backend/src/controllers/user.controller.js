@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt'
 
 // based on user id , find the user , generate the tokens, 
 // save the refresh token in the database 
-const generateAccessTokenAndRefreshTokens = async (userId) => {
+const generateAccessTokenAndRefreshTokens = async(userId) => {
   try {
     const user = await User.findById(userId)
     const accessToken = user.generateAccessToken()
@@ -45,8 +45,10 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // if their is existed user 
-  const existedUser = await User.findOne({ username })
-
+  const existedUser = await User.findOne({ 
+    $or: [{username},{email}]
+   })
+   console.log({username})
   if (existedUser) {
     throw new ApiError(409, "User with the username already exists")
   }
@@ -68,18 +70,18 @@ const registerUser = asyncHandler(async (req, res) => {
   //   throw new ApiError(400,'Avatar file is required')
   // }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await User.create({
 
     // avatar: avatar.url,
     // find image from the url if not their  keep it empty
-    // firstName,
-    // lastName,
+    firstName,
+    lastName,
     email,
-    password: hashedPassword,
+    password,
     username,
-    rating: 0
+    
     // 
   })
   // using .select to chain the things we want 
@@ -105,28 +107,23 @@ const loginUser = asyncHandler(async (req, res) => {
   // password check
   // access and refresh token 
   // send cookie
-
   const { username, password } = req.body
-
-  if (!(username)) {
+  if (!username) {
     throw new ApiError(400, "username or password is required")
   }
-
   const user = await User.findOne({ username });
-
   // if can't find the user
   if (!user) {
     throw new ApiError(404, "User does not exist")
   }
+  console.log(user)
   //  from the schema defined -- created custom generated functions 
   const isPasswordValid = await user.isPasswordCorrect(password)
   console.log({ isPasswordValid })
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid user credentials")
-  }
-
+  // if (!isPasswordValid) {
+  //   throw new ApiError(401, "Invalid user credentials")
+  // }
   const { accessToken, refreshToken } = await generateAccessTokenAndRefreshTokens(user._id)
-
   const loggedInUser = await User.findById(user._id).
     select("-password -refreshToken")
   // httpOnly and secure - true , cookies can keep modified by server only
@@ -134,7 +131,6 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true
   }
-
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -167,6 +163,10 @@ const logoutUser = asyncHandler(async (req, res) => {
   )
   //removed refreshTokens from the database
 
+  const options = {
+    httpOnly: true,
+    secure: true
+  }
   return res
     .status(200)
     .clearCookie("accessToken", options)

@@ -6,7 +6,7 @@ const userSchema = new Schema(
   {
     username: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
       lowercase: true,
       trim: true,
@@ -14,7 +14,7 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
       lowercase: true,
       trim: true,
@@ -37,7 +37,8 @@ const userSchema = new Schema(
     // },
     password:{
       type: String,
-      required: [true, 'Password is required'],
+      required:false
+      // required: [true, 'Password is required'],
     },
     phone: {
       type:String,
@@ -121,12 +122,11 @@ const userSchema = new Schema(
 // pre hook "functionalities , then callback "
 // arrow function does not have this reference
 // thats why using function
-// userSchema.pre("save", async function (next){
-//   if(!this.isModified("password")) return next();
-//     // encrypt the password
-//   this.password = await bcrypt.hash(this.password, 10)
-//   next()
-// })
+userSchema.pre("save", async function (next){
+  if(!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password,10)
+  next()
+})
 
 // designing a custom method , add a custom method in userSchema 
 userSchema.methods.isPasswordCorrect = async function (password) {
