@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js'
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken"
 
 // based on user id , find the user , generate the tokens, 
 // save the refresh token in the database 
@@ -81,7 +82,6 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     username,
-    
     // 
   })
   // using .select to chain the things we want 
@@ -175,4 +175,59 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 })
 
-export { registerUser, loginUser, logoutUser }
+const refreshAccesstoken = asyncHandler(async (req, res)=> {
+  const incomingRefershToken =  req.cookies.refreshToken || req.body.refreshToken
+  if(!incomingRefershToken){
+    throw new ApiError(401, "unauthorized request")
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefershToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    )
+  
+    const user = await User.findById(decodedToken?._id)
+  
+    if(!user){
+      throw new ApiError(401, "Invalid refresh token")
+    }
+  
+    if(incomingRefershToken !== user?.refreshToken){
+      throw new ApiError(401,"Refresh token is expired or used")
+    }
+  
+    // generate new refresh token
+  
+    const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshTokens(user._id)
+    
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+  
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {accessToken, newRefreshToken},
+        "Access token refreshed"
+      )
+    )
+  } catch (error) {
+    throw new ApiError(401, error?.message || "invalid refresh token")
+  }
+
+
+
+})
+export { 
+  registerUser,
+  loginUser, 
+  logoutUser,
+  refreshAccesstoken 
+
+}
