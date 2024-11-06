@@ -220,14 +220,66 @@ const refreshAccesstoken = asyncHandler(async (req, res)=> {
   } catch (error) {
     throw new ApiError(401, error?.message || "invalid refresh token")
   }
-
-
-
 })
+
+const changeCurrentPassword = asyncHandler(async (req, res)=> {
+  const {oldPassword, newPassword} = req.body
+
+  const user = await User.findById(req.user?._id)
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+  if(!isPasswordCorrect){
+    throw new ApiError(400, "Invalid old password")
+  }
+  // to change in the user schema
+  user.password = newPassword
+  // to save the password in database
+  await user.save({validateBeforeSave: false})
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, {}, "password saved successfully"))
+})
+
+const getCurrentUser = asyncHandler(async (req,res) => {
+  return res
+  .status(200)
+  .json(200, req.user, "current user fetched successfully")
+})
+
+const updateAccountDetails = asyncHandler(async(req, res) => {
+  const {fullName, email} = req.body
+  //suggestion - for files upload, make different endpoints
+  // for less congestion in traffic as other data goes with it 
+
+  if(!fullName || !email){
+    throw new ApiError(400, "All fields are required")
+  }
+  // to find the user 
+  const user = User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        fullName,
+        // fullName, - new syntax
+        // fullName : fullName - old syntaz
+        email:email
+      }
+    },
+    {new:true}
+  ).select("-password ")
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, user, "account details updated successfully"))
+} )
+
 export { 
   registerUser,
   loginUser, 
   logoutUser,
-  refreshAccesstoken 
-
+  refreshAccesstoken,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails
 }
