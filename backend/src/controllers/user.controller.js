@@ -38,9 +38,9 @@ const registerUser = asyncHandler(async (req, res) => {
   // check the user created or not (null)
   // return res
 
-  const { username, email, firstName, lastName, password } = req.body
+  const { username, email, firstName, lastName, password, role } = req.body
 
-  if ([firstName, lastName, email, username, password].some((field) => field?.trim() === '')
+  if ([firstName, lastName, email, username, password, role].some((field) => field?.trim() === '')
   ) {
     throw new ApiError(400, 'All fields are compulsory and required')
   }
@@ -52,6 +52,11 @@ const registerUser = asyncHandler(async (req, res) => {
    console.log({username})
   if (existedUser) {
     throw new ApiError(409, "User with the username already exists")
+  }
+
+  // to if the role is valid 
+  if(!['homwowner', 'cleaner'].includes(role)){
+    throw new ApiError(400,"Role must be either 'homeowner or cleaner")
   }
 
   // middleware - add more fields in request like files add
@@ -82,6 +87,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     username,
+    role
     // 
   })
   // using .select to chain the things we want 
