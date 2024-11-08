@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "build": "webpack --config webpack.config.js",
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
-    "start": "node app.js",
-    "prd": "pm2 start app.js --name 'cleanerbookbackend'"
+    "prd": "pm2 start src/index.js --name 'cleanerbookbackend' --node-args='-r dotenv/config --experimental-json-modules'"
   },
   "author": "Karan Vikas",
   "license": "ISC",
