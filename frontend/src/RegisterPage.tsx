@@ -1,8 +1,7 @@
-import { LoginForm, ProConfigProvider, ProFormText } from '@ant-design/pro-components';
+import { LoginForm, ProConfigProvider, ProFormText, ProFormRadio } from '@ant-design/pro-components';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';  // 导入 Button 和 message
-import { useNavigate } from 'react-router-dom';  // 导入 useNavigate
-import { useState } from 'react';
+import { Button, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 type RegisterFormValues = {
   username: string;
@@ -11,32 +10,35 @@ type RegisterFormValues = {
   lastname: string;
   firstname: string;
   email: string;
+  role: string;
 };
 
 export default () => {
-  const navigate = useNavigate();  // 使用 useNavigate 来实现页面跳转
+  const navigate = useNavigate();
 
   const handleRegister = async (values: RegisterFormValues) => {
-    const { username, password, lastname, firstname, email } = values; // 解构所有字段
+    const { username, password, lastname, firstname, email, role } = values;
 
     try {
-      const response = await fetch('http://3.142.76.164:8000/api/v1/users/register', { //TODO: add the backend URL
+      const response = await fetch('http://3.142.76.164:8000/api/v1/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password, lastname, firstname, email }),
+        body: JSON.stringify({ username, password, lastname, firstname, email, role }), // 使用 role
       });
 
       if (response.ok) {
         message.success('Registration successful!');
-        navigate('/');  // 注册成功后跳转到登录页面
+        navigate('/');
       } else {
-        const errorData = await response.json();
-        message.error(`Registration failed: ${errorData.message}`);
+        const errorText = await response.text();
+        console.error('Error Text:', errorText);  // 打印后端返回的 HTML 错误内容
+        message.error(`Registration failed: ${errorText}`);
       }
     } catch (error) {
-      message.error('Registration request failed, please try again later.');
+      console.error('Error response:', error);
+      message.error(`Registration request failed. Detailed error: ${error.message}`);
     }
   };
 
@@ -45,11 +47,19 @@ export default () => {
       <LoginForm
         title="Register"
         subTitle="Please fill in the information to create an account"
-        onFinish={handleRegister}  
+        onFinish={handleRegister}
         submitter={{
           render: (props) => {
             return (
               <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+                <Button
+                  type="default"
+                  key="cancel"
+                  onClick={() => navigate('/')}
+                  style={{ marginRight: 10 }}
+                >
+                  Cancel
+                </Button>
                 <Button
                   type="primary"
                   key="register"
@@ -69,7 +79,7 @@ export default () => {
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'Username'}
+          placeholder="Username"
           rules={[
             {
               required: true,
@@ -84,7 +94,7 @@ export default () => {
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'Email'}
+          placeholder="Email"
           rules={[
             {
               required: true,
@@ -99,7 +109,7 @@ export default () => {
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'Firstname'}
+          placeholder="Firstname"
           rules={[
             {
               required: true,
@@ -114,7 +124,7 @@ export default () => {
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'Lastname'}
+          placeholder="Lastname"
           rules={[
             {
               required: true,
@@ -129,7 +139,7 @@ export default () => {
             size: 'large',
             prefix: <LockOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'Enter password'}
+          placeholder="Enter password"
           rules={[
             {
               required: true,
@@ -144,7 +154,7 @@ export default () => {
             size: 'large',
             prefix: <LockOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'Confirm your password'}
+          placeholder="Confirm your password"
           rules={[
             {
               required: true,
@@ -161,6 +171,22 @@ export default () => {
           ]}
         />
 
+        <ProFormRadio.Group
+          name="role" // 确保与后端字段名一致
+          options={[
+            { label: 'homeowner', value: 'homeowner' },
+            { label: 'cleaner', value: 'cleaner' },
+          ]}
+          rules={[
+            {
+              required: true,
+              message: 'Please select a user type!',
+            },
+          ]}
+          fieldProps={{
+            style: { display: 'flex', justifyContent: 'center' },
+          }}
+        />
       </LoginForm>
     </ProConfigProvider>
   );
