@@ -35,6 +35,8 @@ const userSchema = new Schema(
     //   type: String,
     //   required: true
     // },
+    // to define user type
+    role: { type: String, enum: ['homeowner', 'cleaner'], required: true },
     password:{
       type: String,
       required:false
@@ -165,6 +167,8 @@ userSchema.methods.generateRefreshToken = function(){
     }
   )
 }
+
+
 
 
 export const User = mongoose.model("User", userSchema)

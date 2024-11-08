@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js'
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken"
 
 // based on user id , find the user , generate the tokens, 
 // save the refresh token in the database 
@@ -37,9 +38,9 @@ const registerUser = asyncHandler(async (req, res) => {
   // check the user created or not (null)
   // return res
 
-  const { username, email, firstName, lastName, password } = req.body
+  const { username, email, firstName, lastName, password, role } = req.body
 
-  if ([firstName, lastName, email, username, password].some((field) => field?.trim() === '')
+  if ([firstName, lastName, email, username, password, role].some((field) => field?.trim() === '')
   ) {
     throw new ApiError(400, 'All fields are compulsory and required')
   }
@@ -51,6 +52,11 @@ const registerUser = asyncHandler(async (req, res) => {
    console.log({username})
   if (existedUser) {
     throw new ApiError(409, "User with the username already exists")
+  }
+
+  // to if the role is valid 
+  if(!['homwowner', 'cleaner'].includes(role)){
+    throw new ApiError(400,"Role must be either 'homeowner or cleaner")
   }
 
   // middleware - add more fields in request like files add
@@ -81,7 +87,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     username,
-    
+    role
     // 
   })
   // using .select to chain the things we want 
@@ -175,4 +181,111 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 })
 
-export { registerUser, loginUser, logoutUser }
+const refreshAccesstoken = asyncHandler(async (req, res)=> {
+  const incomingRefershToken =  req.cookies.refreshToken || req.body.refreshToken
+  if(!incomingRefershToken){
+    throw new ApiError(401, "unauthorized request")
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefershToken,
+      process.env.REFRESH_TOKEN_SECRET,
+    )
+  
+    const user = await User.findById(decodedToken?._id)
+  
+    if(!user){
+      throw new ApiError(401, "Invalid refresh token")
+    }
+  
+    if(incomingRefershToken !== user?.refreshToken){
+      throw new ApiError(401,"Refresh token is expired or used")
+    }
+  
+    // generate new refresh token
+  
+    const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshTokens(user._id)
+    
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+  
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {accessToken, newRefreshToken},
+        "Access token refreshed"
+      )
+    )
+  } catch (error) {
+    throw new ApiError(401, error?.message || "invalid refresh token")
+  }
+})
+
+const changeCurrentPassword = asyncHandler(async (req, res)=> {
+  const {oldPassword, newPassword} = req.body
+
+  const user = await User.findById(req.user?._id)
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+  if(!isPasswordCorrect){
+    throw new ApiError(400, "Invalid old password")
+  }
+  // to change in the user schema
+  user.password = newPassword
+  // to save the password in database
+  await user.save({validateBeforeSave: false})
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, {}, "password saved successfully"))
+})
+
+const getCurrentUser = asyncHandler(async (req,res) => {
+  return res
+  .status(200)
+  .json(200, req.user, "current user fetched successfully")
+})
+
+const updateAccountDetails = asyncHandler(async(req, res) => {
+  const {fullName, email} = req.body
+  //suggestion - for files upload, make different endpoints
+  // for less congestion in traffic as other data goes with it 
+
+  if(!fullName || !email){
+    throw new ApiError(400, "All fields are required")
+  }
+  // to find the user 
+  const user = User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        fullName,
+        // fullName, - new syntax
+        // fullName : fullName - old syntaz
+        email:email
+      }
+    },
+    {new:true}
+  ).select("-password ")
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, user, "account details updated successfully"))
+} )
+
+export { 
+  registerUser,
+  loginUser, 
+  logoutUser,
+  refreshAccesstoken,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails
+}
