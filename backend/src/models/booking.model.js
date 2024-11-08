@@ -1,6 +1,6 @@
-import mongoose, {schema} from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
-const bookingSchema = new mongoose.schema(
+const bookingSchema = new Schema(
   {
     homeownerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -46,4 +46,4 @@ const bookingSchema = new mongoose.schema(
   }
 )
 
-export default Booking = mongoose.model("Booking", bookingSchema)
+export const Booking = mongoose.model("Booking", bookingSchema)

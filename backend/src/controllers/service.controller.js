@@ -31,7 +31,7 @@ try {
       new ApiResponse(200,service,"service by id true")
     )
 } catch (error) {
-  throw new ApiError(500, error?.message || 'error fetching service')
+  throw new ApiError(500, error?.message || 'error fetching service ')
 }
 })
 
