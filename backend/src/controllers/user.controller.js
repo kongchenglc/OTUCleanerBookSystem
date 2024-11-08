@@ -50,14 +50,15 @@ const registerUser = asyncHandler(async (req, res) => {
     $or: [{username},{email}]
    })
    console.log({username})
+   console.log({role})
   if (existedUser) {
     throw new ApiError(409, "User with the username already exists")
   }
 
   // to if the role is valid 
-  if(!['homwowner', 'cleaner'].includes(role)){
-    throw new ApiError(400,"Role must be either 'homeowner or cleaner")
-  }
+  // if(!['homwowner', 'cleaner'].includes(role)){
+  //   throw new ApiError(400,"Role must be either 'homeowner or cleaner")
+  // }
 
   // middleware - add more fields in request like files add
   // const avatarLocalPath = req.files?.avatar[0]?.path || null;

@@ -1,6 +1,6 @@
-import mongoose, {schema} from mongoose
+import mongoose, { Schema } from "mongoose"
 
-const serviceSchema = new mongoose.schema(
+const serviceSchema = new Schema(
   {
     name: {
       type: String,
@@ -19,4 +19,4 @@ const serviceSchema = new mongoose.schema(
   }
 )
 
-export default Service = mongoose.model("Service", serviceSchema)
+export const Service = mongoose.model("Service", serviceSchema)
