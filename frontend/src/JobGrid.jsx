@@ -13,7 +13,7 @@ const JobGrid = ({ filters }) => {
     { id: 7, name: "Job 7", price: "high", area: "Downtown", workHours: 5 },
     { id: 8, name: "Job 8", price: "high", area: "Downtown", workHours: 4 },
     { id: 9, name: "Job 9", price: "high", area: "Downtown", workHours: 8 },
-    // ... 添加更多的 job 数据
+    
   ];
 
   const [filteredJobs, setFilteredJobs] = useState(allJobs);
