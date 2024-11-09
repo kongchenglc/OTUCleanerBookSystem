@@ -4,44 +4,57 @@ import "./FilterSection.css";
 
 const FilterSection = ({ onFilterChange }) => {
   const [filters, setFilters] = useState({
-    price: "",
-    area: "",
-    workHours: "",
+    title: "",
+    minPrice: "",
+    maxPrice: "",
+    duration: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
-    onFilterChange({ ...filters, [name]: value });
+    const updatedFilters = { ...filters, [name]: value };
+    setFilters(updatedFilters);
+    onFilterChange(updatedFilters);
   };
 
   return (
     <div className="filter-section">
       <div className="filter-title">Filter</div>
+
       <div className="filter-option">
-        <label>Price: </label>
-        <select name="price" onChange={handleChange}>
-          <option value="">All</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-      <div className="filter-option">
-        <label>Area: </label>
+        <label>Job Title: </label>
         <input
           type="text"
-          name="area"
-          placeholder="e.g. Downtown"
+          name="title"
+          placeholder="e.g. Cleaning"
           onChange={handleChange}
         />
       </div>
+
       <div className="filter-option">
-        <label>Work Hours: </label>
+        <label>Price Range: </label>
+        <div className="price-range">
+          <input
+            type="number"
+            name="minPrice"
+            placeholder="Min"
+            onChange={handleChange}
+          />
+          <input
+            type="number"
+            name="maxPrice"
+            placeholder="Max"
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      <div className="filter-option">
+        <label>Duration (hours): </label>
         <input
           type="number"
-          name="workHours"
-          placeholder="e.g. 5"
+          name="duration"
+          placeholder="e.g. 3"
           onChange={handleChange}
         />
       </div>
