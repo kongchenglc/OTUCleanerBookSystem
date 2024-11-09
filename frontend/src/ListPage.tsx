@@ -195,6 +195,12 @@ export default () => {
         open={modalVisit}
         onFinish={handleFinish}
         onOpenChange={setModalVisit}
+        submitter={{
+          searchConfig: {
+            submitText: 'Submit',
+            resetText: 'Cancel',
+          },
+        }}
       >
         <ProFormText
           width="md"
@@ -240,6 +246,12 @@ export default () => {
           price: currentPost?.basePrice,
           time: currentPost?.duration,
           content: currentPost?.description,
+        }}
+        submitter={{
+          searchConfig: {
+            submitText: 'Save',
+            resetText: 'Cancel',
+          },
         }}
       >
         <ProFormText
