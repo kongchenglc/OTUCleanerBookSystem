@@ -3,39 +3,127 @@ import React, { useState, useEffect } from "react";
 import "./JobGrid.css";
 
 const JobGrid = ({ filters }) => {
-  const allJobs = [
-    { id: 1, name: "Job 1", price: "low", area: "Downtown", workHours: 5 },
-    { id: 2, name: "Job 2", price: "low", area: "Downtown", workHours: 8 },
-    { id: 3, name: "Job 3", price: "low", area: "Downtown", workHours: 4 },
-    { id: 4, name: "Job 4", price: "medium", area: "Suburb", workHours: 5 },
-    { id: 5, name: "Job 5", price: "medium", area: "Suburb", workHours: 4 },
-    { id: 6, name: "Job 6", price: "medium", area: "Suburb", workHours: 8 },
-    { id: 7, name: "Job 7", price: "high", area: "Downtown", workHours: 5 },
-    { id: 8, name: "Job 8", price: "high", area: "Downtown", workHours: 4 },
-    { id: 9, name: "Job 9", price: "high", area: "Downtown", workHours: 8 },
-    
-  ];
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userId = userInfo?._id;
 
-  const [filteredJobs, setFilteredJobs] = useState(allJobs);
+  const [allJobs, setAllJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
-    let updatedJobs = allJobs.filter((job) => {
-      return (
-        (filters.price ? job.price === filters.price : true) &&
-        (filters.area ? job.area.toLowerCase().includes(filters.area.toLowerCase()) : true) &&
-        (filters.workHours ? job.workHours <= filters.workHours : true)
-      );
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/v1/services/getAllServices`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error fetching jobs:", errorText);
+          throw new Error(`Error fetching jobs: ${errorText}`);
+        }
+
+        const result = await response.json();
+        setAllJobs(result.data || []);
+        setFilteredJobs(result.data || []);
+      } catch (error) {
+        console.error("Detailed Error:", error);
+      }
+    };
+
+    fetchJobs();
+  }, [userId]);
+
+  useEffect(() => {
+    const updatedJobs = allJobs.filter((job) => {
+      const titleMatch = filters.title
+        ? job.name.toLowerCase().includes(filters.title.toLowerCase())
+        : true;
+
+      const minPriceMatch = filters.minPrice
+        ? job.basePrice >= parseFloat(filters.minPrice)
+        : true;
+
+      const maxPriceMatch = filters.maxPrice
+        ? job.basePrice <= parseFloat(filters.maxPrice)
+        : true;
+
+      const durationMatch = filters.duration
+        ? parseInt(job.duration) <= parseInt(filters.duration)
+        : true;
+
+      return titleMatch && minPriceMatch && maxPriceMatch && durationMatch;
     });
+
     setFilteredJobs(updatedJobs);
-  }, [filters]);
+  }, [filters, allJobs]);
+
+  const handleJobClick = (job) => {
+    setSelectedJob(job);
+  };
+
+  const handleGetJob = async () => {
+    if (!selectedJob) return;
+
+    const bookingData = {
+      landlordId: "landlord-id-here",
+      cleanerId: userId,
+      service: {
+        serviceId: selectedJob._id,
+        name: selectedJob.name,
+        rate: selectedJob.basePrice,
+      },
+      bookingDate: new Date().toISOString(),
+      totalPrice: selectedJob.basePrice,
+      specialInstructions: "Add any special instructions here",
+      status: "Pending",
+    };
+
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/booking/createBooking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (response.ok) {
+        console.log("Booking created successfully");
+        alert("Booking created successfully");
+      } else {
+        const errorText = await response.text();
+        console.error("Failed to create booking:", errorText);
+        alert(`Failed to create booking: ${errorText}`);
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert(`Error creating booking: ${error.message}`);
+    }
+  };
 
   return (
     <div className="job-grid">
-      {filteredJobs.map((job) => (
-        <div key={job.id} className="job-card">
-          {job.name}
-        </div>
-      ))}
+      {filteredJobs.length > 0 ? (
+        filteredJobs.map((job) => (
+          <div
+            key={job._id}
+            className={`job-card ${selectedJob?._id === job._id ? "selected" : ""}`}
+            onClick={() => handleJobClick(job)}
+          >
+            <h3>{job.name}</h3>
+            <p>{job.description}</p>
+            <p>Price: {job.basePrice}</p>
+            <p>Duration: {job.duration} hours</p>
+            {selectedJob?._id === job._id && (
+              <button className="get-job-button" onClick={handleGetJob}>
+                Get Job
+              </button>
+            )}
+          </div>
+        ))
+      ) : (
+        <p>No jobs available.</p>
+      )}
     </div>
   );
 };
