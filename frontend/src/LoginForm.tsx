@@ -62,7 +62,7 @@ export default () => {
 
   return (
     <ProConfigProvider hashed={false}>
-      <LoginForm
+      <LoginForm1
         title="OTU Cleaner Book System"
         subTitle="Open Source Cleaner Book Web App"
         onFinish={handleLogin}
