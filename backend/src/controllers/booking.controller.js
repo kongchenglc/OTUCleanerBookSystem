@@ -11,10 +11,10 @@ const createBooking = asyncHandler(async (req,res)=> {
   const {cleanerId, serviceId, bookingDate, specialInstructions } = req.body
   // Not sure -- Assuming get it from the req.user, from the authentication middleware
   const landlordId = req.user._id;
-
+  console.log(user._id)
     // verify the cleaner exist and has the cleaner role 
     try {
-        
+      
       const cleaner = await User.findOne({ _id:cleanerId, role: "cleaner" })
       if(!cleaner){
         throw new ApiError(404, "cleaner does not exist")
