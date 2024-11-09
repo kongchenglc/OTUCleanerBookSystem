@@ -1,6 +1,6 @@
-import mongoose, {schema} from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
-const availabilitySchema = new mongoose.Schema({
+const availabilitySchema = new Schema({
   cleanerId:{
     type: mongoose.Schema.Types.ObjectId,
     ref:'User',
