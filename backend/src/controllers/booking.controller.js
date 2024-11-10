@@ -14,11 +14,11 @@ const createBooking = asyncHandler(async (req,res)=> {
   
   // Not sure -- Assuming get it from the req.user, from the authentication middleware
   const landlordId = req.user._id;
-  console.log("landlord", landlordId)
+  // console.log("landlord", landlordId)
   // console.log(user._id)
     // verify the cleaner exist and has the cleaner role 
     try {
-      console.log("this work")
+      // console.log("this work")
 
       const cleaner = await User.findOne(
         { 
@@ -26,7 +26,7 @@ const createBooking = asyncHandler(async (req,res)=> {
         , role: "cleaner" 
       }
     )
-      console.log({cleaner})
+      // console.log({cleaner})
 
       if(!cleaner){
         throw new ApiError(404, "cleaner does not exist")
@@ -34,7 +34,7 @@ const createBooking = asyncHandler(async (req,res)=> {
   
     // verify the service exist
       const service = await Service.findById(serviceId);
-      console.log('service is working', serviceId)
+      // console.log('service is working', serviceId)
       if(!service){
         throw new ApiError(404, "service does not exist")
       }
@@ -79,6 +79,41 @@ const createBooking = asyncHandler(async (req,res)=> {
     }
 
 })
+
+const getLandlordBooking = asyncHandler(async(req,res)=>{
+  const landlordId = req.user._id;
+
+  try {
+    const bookings = await Booking
+    .find({homeownerId: landlordId})
+    .populate('cleanerId', 'firstname lastname');
+    return res.status(200).json(new ApiResponse(200, {success:true, bookings}))
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Error fetching bookings")
+  }
+})
+
+const getBookingById = asyncHandler(async(req,res) => {
+  const {bookingId} = req.params;
+  const landlordId = req.user._id;
+
+  try {
+    const booking = await Booking.findOne({_id: bookingId, homeownerId: landlordId})
+    .populate('cleanerId', 'firstName lastName')
+    .populate('service.serviceId', 'name basePrice')
+    if(!booking){
+      throw new ApiError(404, "Booking not found or youa are not authorized to view this booking")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {success:true, booking}));
+    
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Error fetching booking")
+  }
+})
+
+
 
 export {
   createBooking
