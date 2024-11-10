@@ -80,8 +80,10 @@ const createBooking = asyncHandler(async (req,res)=> {
 
 })
 
-const getLandlordBooking = asyncHandler(async(req,res)=>{
+const getLandlordBookings = asyncHandler(async(req,res)=>{
   const landlordId = req.user._id;
+  console.log(landlordId)
+  // const landlordId = req.user._id;
 
   try {
     const bookings = await Booking
@@ -113,8 +115,8 @@ const getBookingById = asyncHandler(async(req,res) => {
   }
 })
 
-
-
 export {
-  createBooking
+  createBooking,
+  getLandlordBookings,
+  getBookingById
 }
