@@ -21,7 +21,7 @@ const createService = asyncHandler(async(req,res) => {
     return res.
     status(201)
     .json(
-      new ApiResponse(201, newService, "service creaeted successfully")
+      new ApiResponse(201, newService, "service created successfully")
     )
   } catch (error) {
     throw new ApiError(500, error?.message || "Error creating Service")

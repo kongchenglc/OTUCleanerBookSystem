@@ -30,19 +30,19 @@ const bookingSchema = new Schema(
         type: Date,
         required: true
       },
+      totalPrice:{
+        type: Number,
+        required: true,
+      },
+    },
       status: {
         type: String,
         enum: ['Pending','Confirmed','Completed','Cancelled'],
         default:'Pending'
       },
-      totalPrice:{
-        type: Number,
-        required: true,
-      },
       specialInstructions:{
         type: String
       },
-    }
   }
 )
 
