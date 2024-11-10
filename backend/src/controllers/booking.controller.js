@@ -1,47 +1,60 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { Booking } from '../models/booking.model.js'
-import { Service } from '../models/services.model.js'
+import { Booking } from '../models/booking.model.js';
+import { Service } from '../models/services.model.js';
+import { User } from '../models/user.model.js';
 
 // creating a booking(landlord books a cleaner)
 
 const createBooking = asyncHandler(async (req,res)=> {
   // extracting the necessary fields from the request body
-  const {cleanerId, serviceId, bookingDate, specialInstructions } = req.body
+  const {cleanerId, bookingDate,  specialInstructions} = req.body;
+  const { serviceId, name, basePrice} = req.body.service
+  
   // Not sure -- Assuming get it from the req.user, from the authentication middleware
   const landlordId = req.user._id;
-  console.log(user._id)
+  console.log("landlord", landlordId)
+  // console.log(user._id)
     // verify the cleaner exist and has the cleaner role 
     try {
-      
-      const cleaner = await User.findOne({ _id:cleanerId, role: "cleaner" })
+      console.log("this work")
+
+      const cleaner = await User.findOne(
+        { 
+        _id: cleanerId
+        , role: "cleaner" 
+      }
+    )
+      console.log({cleaner})
+
       if(!cleaner){
         throw new ApiError(404, "cleaner does not exist")
       }
   
-      console.log(cleaner)
     // verify the service exist
       const service = await Service.findById(serviceId);
+      console.log('service is working', serviceId)
       if(!service){
         throw new ApiError(404, "service does not exist")
       }
-  
+
+      console.log({service})
       // calculate total price  
       const totalPrice = service.basePrice;
   
       // create a new booking instance
   
       const booking = new Booking({
-        landlordId, 
+        homeownerId: landlordId, 
         cleanerId,
         service: {
           serviceId: service._id,
           name: service.name,
-          rate: service.basePrice
+          rate: service.basePrice,
+          bookingDate,
+          totalPrice,
         },
-        bookingDate,
-        totalPrice,
         specialInstructions,
         status: 'Pending'
       });
