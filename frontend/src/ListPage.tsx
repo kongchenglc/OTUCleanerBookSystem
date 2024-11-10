@@ -1,88 +1,155 @@
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { ProList, ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, Tag, message, Popconfirm, Card } from 'antd';
-import React, { useState } from 'react';
-import Header from './Header'; // 导入 Header 组件
+import React, { useState, useEffect } from 'react';
+import Header from './Header';
 
 export default () => {
   const [modalVisit, setModalVisit] = useState(false);
   const [editModalVisit, setEditModalVisit] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
-  const [dataSource, setDataSource] = useState([
-    { title: "Sample Post 1", content: "Looking for a cleaner for 2 hours.", price: "$20", time: "2 hours", place: "123 Main St", _id: "1" },
-    { title: "Sample Post 2", content: "Need a cleaner for 3 hours.", price: "$30", time: "3 hours", place: "456 Oak St", _id: "2" }
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
-  // 新建 post 时，提交内容到本地数据源
+  // Fetch all services from the backend
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/v1/services/getAllServices');
+        const result = await response.json();
+        if (response.ok) {
+          setDataSource(result.data || []);
+        } else {
+          console.error("Error fetching posts:", result.message);
+          message.error(`Failed to fetch posts: ${result.message}`);
+        }
+      } catch (error) {
+        console.error("Detailed error:", error);
+        message.error("Failed to fetch posts. Check console for details.");
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  // Create new post
   const handleFinish = async (values) => {
     const newPost = {
-      title: values.name,
-      content: values.content,
-      price: values.price,
-      time: values.time,
-      place: values.place,
-      _id: String(Date.now()),  // 使用时间戳作为 ID
+      name: values.name,
+      description: values.content,
+      basePrice: values.price,
+      duration: values.time,
     };
-    setDataSource([...dataSource, newPost]); // 添加新 post 到列表
-    message.success('Post created successfully');
-    setModalVisit(false);
+
+    try {
+      const response = await fetch('http://localhost:8000/api/v1/services/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPost),
+      });
+
+      if (response.ok) {
+        const createdPost = await response.json();
+        message.success('Post created successfully');
+        setDataSource([...dataSource, createdPost.data]);
+        setModalVisit(false);
+      } else {
+        const errorText = await response.text();
+        console.error('Error creating post:', errorText);
+        message.error(`Failed to create post: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Detailed error:', error);
+      message.error(`Failed to create post. Detailed error: ${error.message}`);
+    }
   };
 
-  // 删除 post
-  const handleDelete = (id) => {
-    setDataSource(dataSource.filter((post) => post._id !== id)); // 从列表中移除已删除的 post
-    message.success('Post deleted successfully');
+  // Delete post
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/services/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        message.success('Post deleted successfully');
+        setDataSource(dataSource.filter((post) => post._id !== id));
+      } else {
+        const errorText = await response.text();
+        console.error('Error deleting post:', errorText);
+        message.error(`Failed to delete post: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Detailed error:', error);
+      message.error(`Failed to delete post. Detailed error: ${error.message}`);
+    }
   };
 
-  // 编辑 post
-  const handleEdit = (values) => {
+  // Edit post
+  const handleEdit = async (values) => {
     const updatedPost = {
-      ...currentPost,
-      title: values.name,
-      content: values.content,
-      price: values.price,
-      time: values.time,
-      place: values.place,
+      name: values.name,
+      description: values.content,
+      basePrice: values.price,
+      duration: values.time,
     };
-    setDataSource(
-      dataSource.map((post) => (post._id === currentPost._id ? updatedPost : post))
-    ); // 更新 post
-    message.success('Post updated successfully');
-    setEditModalVisit(false);
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/services/${currentPost._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedPost),
+      });
+
+      if (response.ok) {
+        message.success('Post updated successfully');
+        setDataSource(
+          dataSource.map((post) => (post._id === currentPost._id ? { ...post, ...updatedPost } : post))
+        );
+        setEditModalVisit(false);
+      } else {
+        const errorText = await response.text();
+        console.error('Error updating post:', errorText);
+        message.error(`Failed to update post: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Detailed error:', error);
+      message.error(`Failed to update post. Detailed error: ${error.message}`);
+    }
   };
 
   return (
     <>
-      <Header /> {/* 在页面顶部显示导航栏 */}
-      <ProList<{ title: string; content: string; price: string; time: string; place: string; _id: string }>
-        toolBarRender={() => {
-          return [
-            <Button
-              key="modalButton"
-              type="primary"
-              onClick={() => {
-                setModalVisit(true);  // 打开模态框
-              }}
-            >
-              <PlusOutlined />
-              Create new Post
-            </Button>,
-          ];
-        }}
+      <Header />
+      <ProList
+        toolBarRender={() => [
+          <Button
+            key="modalButton"
+            type="primary"
+            onClick={() => {
+              setModalVisit(true);
+            }}
+          >
+            <PlusOutlined />
+            Create new Post
+          </Button>,
+        ]}
         itemLayout="vertical"
         rowKey="_id"
         headerTitle="Post List"
-        dataSource={dataSource}  // 绑定本地数据源
+        dataSource={dataSource}
         metas={{
           title: {
-            dataIndex: 'title',
+            dataIndex: 'name',
           },
           description: {
             render: (_, row) => (
               <>
-                <Tag>Price: {row.price}</Tag>
-                <Tag>Time: {row.time}</Tag>
-                <Tag>Place: {row.place}</Tag>
+                <Tag>Price: {row.basePrice}</Tag>
+                <Tag>Duration: {row.duration}</Tag>
               </>
             ),
           },
@@ -93,8 +160,8 @@ export default () => {
                   type="link"
                   icon={<EditOutlined />}
                   onClick={() => {
-                    setCurrentPost(row);  // 设定当前编辑的 post
-                    setEditModalVisit(true);  // 打开编辑模态框
+                    setCurrentPost(row);
+                    setEditModalVisit(true);
                   }}
                 >
                   Edit
@@ -113,23 +180,27 @@ export default () => {
             ],
           },
           content: {
-            render: (_, row) => {
-              return (
-                <Card style={{ marginBottom: 16 }}>
-                  <div>{row.content}</div>
-                </Card>
-              );
-            },
+            render: (_, row) => (
+              <Card style={{ marginBottom: 16 }}>
+                <div>{row.description}</div>
+              </Card>
+            ),
           },
         }}
       />
 
-      {/* ModalForm - 新建 post */}
+      {/* ModalForm - Create new post */}
       <ModalForm
         title="Create new post"
         open={modalVisit}
-        onFinish={handleFinish}  // 当用户点击提交时，直接更新本地数据源
+        onFinish={handleFinish}
         onOpenChange={setModalVisit}
+        submitter={{
+          searchConfig: {
+            submitText: 'Submit',
+            resetText: 'Cancel',
+          },
+        }}
       >
         <ProFormText
           width="md"
@@ -151,13 +222,6 @@ export default () => {
           label="Approximate Time"
           placeholder="Enter approximate time"
           rules={[{ required: true, message: 'Please enter the approximate time' }]}
-        />
-        <ProFormText
-          width="md"
-          name="place"
-          label="Work Place"
-          placeholder="Enter work place"
-          rules={[{ required: true, message: 'Please enter the work place' }]}
         />
         <ProFormTextArea
           name="content"
@@ -171,18 +235,23 @@ export default () => {
         />
       </ModalForm>
 
-      {/* ModalForm - 编辑 post */}
+      {/* ModalForm - Edit post */}
       <ModalForm
         title="Edit post"
         open={editModalVisit}
-        onFinish={handleEdit}  // 修改 post
+        onFinish={handleEdit}
         onOpenChange={setEditModalVisit}
         initialValues={{
-          name: currentPost?.title,
-          price: currentPost?.price,
-          time: currentPost?.time,
-          place: currentPost?.place,
-          content: currentPost?.content,
+          name: currentPost?.name,
+          price: currentPost?.basePrice,
+          time: currentPost?.duration,
+          content: currentPost?.description,
+        }}
+        submitter={{
+          searchConfig: {
+            submitText: 'Save',
+            resetText: 'Cancel',
+          },
         }}
       >
         <ProFormText
@@ -205,13 +274,6 @@ export default () => {
           label="Approximate Time"
           placeholder="Enter approximate time"
           rules={[{ required: true, message: 'Please enter the approximate time' }]}
-        />
-        <ProFormText
-          width="md"
-          name="place"
-          label="Work Place"
-          placeholder="Enter work place"
-          rules={[{ required: true, message: 'Please enter the work place' }]}
         />
         <ProFormTextArea
           name="content"
