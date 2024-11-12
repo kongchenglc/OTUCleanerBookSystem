@@ -115,15 +115,54 @@ const getBookingById = asyncHandler(async(req,res) => {
   }
 })
 
-  // const updateBookingById = asyncHandler(async(req,res)=>{
-  //   const {bookingId} = req.params;
-  //   const landlordId = rew.user._id;
-  //   const {bookingDate, specialInstructions, status} = req.body;
+  const updateBookingById = asyncHandler(async(req,res)=>{
+    const {bookingId} = req.params;
+    const landlordId = req.user._id;
+    const {bookingDate, specialInstructions, status} = req.body;
+    console.log({bookingId},{landlordId});
+    
+    try {
+      const booking = await Booking.findOne({ _id: bookingId, homeownerId: landlordId});
+  
+      if(!booking){
+        throw new ApiError(404, "Booking not found");
+      }
+  
+      // check if the booking is in a modifiable state
+      if(booking.status === 'completed' || booking.status === 'cancelled'){
+        throw new ApiError(400,"Cannot update a completed or cancelled booking")
+      }
+  
+      if(!booking){
+        throw new ApiError(404, "booking not found")
+      }
+  
+      if(bookingDate) booking.service.bookingDate = bookingDate;
+      if(specialInstructions) booking.specialInstructions = specialInstructions;
+      if(status){
+        if(['Pending','Confirmed','Completed','Cancelled'].includes(status)){
+          booking.status = status;
+        } else {
+          throw new ApiError(400,"Invalid status value")
+        }
+      }
+  
+      await booking.save();
+  
+      return res
+      .status(200)
+      .json(new ApiResponse(
+        200, 'booking updated successfully', booking
+      ))
+    } catch (error) {
+      throw new ApiError(500 , error?.message || "Error updated booking")
+    }
+  })
 
-  //   const booking = await 
-  // })
+
 export {
   createBooking,
   getLandlordBookings,
-  getBookingById
+  getBookingById,
+  updateBookingById
 }
