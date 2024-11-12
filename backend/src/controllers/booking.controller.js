@@ -115,6 +115,13 @@ const getBookingById = asyncHandler(async(req,res) => {
   }
 })
 
+  // const updateBookingById = asyncHandler(async(req,res)=>{
+  //   const {bookingId} = req.params;
+  //   const landlordId = rew.user._id;
+  //   const {bookingDate, specialInstructions, status} = req.body;
+
+  //   const booking = await 
+  // })
 export {
   createBooking,
   getLandlordBookings,
