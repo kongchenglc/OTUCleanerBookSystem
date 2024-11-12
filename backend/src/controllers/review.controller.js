@@ -28,12 +28,12 @@ const createReview = asyncHandler(async(req, res)=> {
     }
   
     // check if a review already exists for this booking
-    const existingReview = await createReview.findOne({bookingId})
-    console.log('Existing review not their')
-    if(existingReview){
+    const existingReview = await Review.findOne({bookingId})
+    console.log('Existing review their', {existingReview})
+    if(!existingReview){
       throw new ApiError(400,"Review already exist for this booking")
     }
-  
+    console.log("passed not existed phase")
     // create a new review 
     const newReview = new Review({
       bookingId,
@@ -43,11 +43,11 @@ const createReview = asyncHandler(async(req, res)=> {
       comment
     })
   
-    await newReview.save({validiteBeforeSave: false});
+    await newReview.save({validateBeforeSave:false});
 
     return res
     .status(200)
-    .json(new ApiResponse(201,"review created successfully",{review}))
+    .json(new ApiResponse(201,"review created successfully",{newReview}))
   } catch (error) {
     return new ApiError(500,error?.message || "Error creating review")
   }
