@@ -159,7 +159,6 @@ const getBookingById = asyncHandler(async(req,res) => {
     }
   })
 
-
 export {
   createBooking,
   getLandlordBookings,
