@@ -6,6 +6,6 @@ const router = Router()
 
 router.route('/createBooking').post(verifyJWT, createBooking);
 router.route('/bookings').get(verifyJWT, getLandlordBookings);
-router.route('/:bookingId').get(getBookingById);
+router.route('/:bookingId').get(verifyJWT, getBookingById);
 
 export default router

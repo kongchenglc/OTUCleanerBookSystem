@@ -29,10 +29,7 @@ const createService = asyncHandler(async(req,res) => {
 })
 
 
-
-
 // get all the services 
-
 
 const getAllServices = asyncHandler(async(req, res)=>{
   try {
