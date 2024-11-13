@@ -1,7 +1,8 @@
-import Availability from "../models/availability.model.js"
+
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
+import { Availability } from "../models/availability.model.js"
 
 // create availability 
 
@@ -84,7 +85,7 @@ const updateAvailability = asyncHandler(async(req,res) => {
         { 
           success:true,
           message:"Availability updated successfully",
-          updateAvailability
+          updatedAvailability
         }
       )
     )
@@ -122,3 +123,10 @@ const deleteAvailability = asyncHandler(async(req,res) => {
   }
 
 })
+
+export {
+  createAvailability,
+  getAvailabilitybyDate,
+  updateAvailability,
+  deleteAvailability
+}

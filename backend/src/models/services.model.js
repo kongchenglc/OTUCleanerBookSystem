@@ -15,6 +15,11 @@ const serviceSchema = new Schema(
     },
     duration:{
       type: String
+    },
+    homeownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
     }
   }
 )

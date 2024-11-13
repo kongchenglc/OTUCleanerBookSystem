@@ -6,17 +6,23 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 // create a new service 
 
 const createService = asyncHandler(async(req,res) => {
+  
   const {name, description, basePrice, duration} = req.body;
+  // Project change stuff add start
+    const landlordId =  req.user._id;
+    console.log({landlordId})
+  // Project change stuff stop
 
   try {
     const newService = new Service({
       name,
       description,
+      homeownerID:landlordId,
       basePrice,
-      duration
+      duration,
     });
-  
-    await newService.save();
+   console.log('this is working' , {newService})
+    await newService.save({validateBeforeSave: false});
   
     return res.
     status(201)
