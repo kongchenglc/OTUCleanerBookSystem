@@ -10,7 +10,7 @@ export default () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
 
-  const API_URL = 'http://3.142.76.164:8000/api/v1/users/login';
+  const API_URL = 'http://localhost:8000/api/v1/users/login';
 
   const handleLogin = async (values: any) => {
     try {
@@ -23,6 +23,7 @@ export default () => {
           username: values.username,
           password: values.password,
         }),
+        credentials: 'include', // 允许携带 cookie
       });
 
       const data = await response.json();
