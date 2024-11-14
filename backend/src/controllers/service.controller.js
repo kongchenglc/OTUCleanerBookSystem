@@ -9,15 +9,14 @@ const createService = asyncHandler(async(req,res) => {
   
   const {name, description, basePrice, duration} = req.body;
   // Project change stuff add start
-    const landlordId =  req.user._id;
-    console.log({landlordId})
+    const homeownerId =  req.user._id;
   // Project change stuff stop
 
   try {
     const newService = new Service({
       name,
       description,
-      homeownerID:landlordId,
+      homeownerId,
       basePrice,
       duration,
     });

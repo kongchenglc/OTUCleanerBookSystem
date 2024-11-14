@@ -20,7 +20,7 @@ export default () => {
     const { username, password, lastname, firstname, email, role } = values;
 
     try {
-      const response = await fetch('http://3.142.76.164:8000/api/v1/users/register', {
+      const response = await fetch('http://localhost:8000/api/v1/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
