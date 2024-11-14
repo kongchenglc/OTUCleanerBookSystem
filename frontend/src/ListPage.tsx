@@ -47,6 +47,7 @@ export default () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newPost),
+        credentials: 'include'
       });
 
       if (response.ok) {

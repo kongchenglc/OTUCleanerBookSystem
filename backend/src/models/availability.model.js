@@ -23,4 +23,4 @@ const availabilitySchema = new Schema({
   },{timestamps:true}
 )
 
-export default Availability = mongoose.model("Availability",availabilitySchema)
+export const Availability = mongoose.model("Availability",availabilitySchema)
