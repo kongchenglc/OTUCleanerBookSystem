@@ -16,11 +16,18 @@ const serviceSchema = new Schema(
     duration:{
       type: String
     },
+    // changes for the updated schema start
     homeownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
+    },
+    cleanerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:'User',
+      required: false // cleaner is optional at first
     }
+    // changes for the updated schema stop 
   }
 )
 
