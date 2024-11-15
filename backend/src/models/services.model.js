@@ -26,9 +26,15 @@ const serviceSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref:'User',
       required: false // cleaner is optional at first
+    },
+    status: {
+      type:String,
+      enum: ['waiting cleaner', 'in progress', 'finished'],
+      default: 'waiting cleaner'
     }
     // changes for the updated schema stop 
-  }
+  },
+  {timestamps:true}
 )
 
 export const Service = mongoose.model("Service", serviceSchema)

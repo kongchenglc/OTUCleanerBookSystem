@@ -8,9 +8,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const createService = asyncHandler(async(req,res) => {
   
   const {name, description, basePrice, duration} = req.body;
-  // Project change stuff add start
+  // Project v2 change stuff add start
     const homeownerId =  req.user._id;
-  // Project change stuff stop
+  // Project v2 change stuff stop
 
   try {
     const newService = new Service({
@@ -38,7 +38,13 @@ const createService = asyncHandler(async(req,res) => {
 
 const getAllServices = asyncHandler(async(req, res)=>{
   try {
-    const services = await Service.find({});
+    // add for v2 of code 
+    const query = req.user.role === 'homeowner' ? { homeownerId: req.user._id } : { cleanerId: req.user._id };
+    const services = await Service.find({query});
+    // v2 stop 
+    
+    // v1 code commented
+    // const services = await Service.find({query});
     return res
     .status(200)
     .json(
@@ -56,6 +62,15 @@ try {
     if(!service){
       throw new ApiError(404, "service does not exist")
     }
+
+    if (req.user.role === 'homeowner' && service.homeownerId.toString() !== req.user._id.toString()) {
+      throw new ApiError(403, "Access denied");
+    }
+
+    if (req.user.role === 'cleaner' && service.cleanerId?.toString() !== req.user._id.toString()) {
+      throw new ApiError(403, "Access denied");
+    }
+
     return res
     .status(200)
     .json(
@@ -66,9 +81,10 @@ try {
 }
 })
 
+// Acc . to v2 code :- only landlord can update the service to finished, while a cleaner can only update it to progress
 const updateService =  asyncHandler(async(req,res) => {
   const {serviceId} = req.params;
-  const {name, description, basePrice, duration}= req.body;
+  const {name, description, basePrice, duration, status}= req.body;
 
   try {
     const updatedService = await Service.findByIdAndUpdate(
