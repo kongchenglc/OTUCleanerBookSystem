@@ -145,7 +145,15 @@ const chooseServiceToWorkOn = asyncHandler(async(req,res)=>{
 
 // allow cleaners to view the available services 
 const getAvailableServiceForCleaner = asyncHandler(async (req, res)=> {
-  const services = await Service.find({ status: 'waiting cleaner'});
+  try {
+    const services = await Service.find({ status: 'waiting cleaner'});
+  
+    return res
+    .status(200)
+    .json(new ApiResponse(200, services, "Available services fetched"));
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Error fetching available services");
+  }
 })
 
 const deleteService = asyncHandler(async (req,res) => {
@@ -173,6 +181,8 @@ export {
   getAllServices,
   getServiceById,
   updateService,
+  chooseServiceToWorkOn,
+  getAvailableServiceForCleaner,
   deleteService
 }
 
