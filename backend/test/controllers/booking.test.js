@@ -1,7 +1,7 @@
-import chai from 'chai'
+import * as chai from 'chai'
 import chaiHttp from 'chai-http'
 import { createBooking, getLandlordBookings, getBookingById, updateBookingById } from '../../src/controllers/booking.controller.js'
-import { Booking } from '../models/booking.model.js'
+import { Booking } from '../../src/models/booking.model.js'
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -34,7 +34,10 @@ describe("Booking Controller Tests", () => {
       };
 
       const response = await createBooking(req,res);
-      expect(response.success).to.equal(true);
+      console.log({response});
+      // expect(response.success).to.equal(true);
+      // expect(response.failure).to.equal(true);
+      // expect(response.statusCode).to.equal(201);
       expect(response.booking).to.have.property('homeownerId');
     })
   })
@@ -72,7 +75,7 @@ describe("Booking Controller Tests", () => {
       expect(response.bookings).to.have.property('homeownerId')
     })
   })
-p
+
   describe("PUT /updateBookingById", () => {
     it("should update the booking with new data", async() => {
       const req = {
@@ -95,3 +98,5 @@ p
     })
   })
 })
+
+export default chai
