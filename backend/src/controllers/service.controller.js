@@ -110,6 +110,44 @@ const updateService =  asyncHandler(async(req,res) => {
   }
 })
 
+// cleaner choose a service 
+const chooseServiceToWorkOn = asyncHandler(async(req,res)=>{
+  const {serviceId} = req.params;
+  const cleanerId = req.user._id;
+
+  try {
+    // find the service by ID
+    const service = await Service.findById(serviceId);
+
+    if(!service){
+      throw new ApiError(404, "Service not found");
+    }
+
+    // if the service already has a cleaner assigned , reject the request
+    if(service.cleanerId){
+      throw new ApiError(400, "This service is already assigned to another cleaner")
+    }
+
+    // update the service status and assign the cleaner to it.
+    service.status = 'in progress';
+    service.cleanerId = cleanerId;
+
+    await service.save();
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, service, "Service picked up by the cleaner"))
+  }
+  catch(error){
+    throw new ApiError(500, error?.message || "Error while choosing the service");
+  }
+})
+
+// allow cleaners to view the available services 
+const getAvailableServiceForCleaner = asyncHandler(async (req, res)=> {
+  const services = await Service.find({ status: 'waiting cleaner'});
+})
+
 const deleteService = asyncHandler(async (req,res) => {
   const {serviceId} = req.params;
 
