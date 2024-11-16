@@ -1,4 +1,4 @@
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, EditOutlined, CheckOutlined } from '@ant-design/icons';
 import { ProList, ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, Tag, message, Popconfirm, Card } from 'antd';
 import React, { useState, useEffect } from 'react';
@@ -9,6 +9,9 @@ export default () => {
   const [editModalVisit, setEditModalVisit] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
   const [dataSource, setDataSource] = useState([]);
+
+  // 获取存储在浏览器中的 homeownerId
+  const homeownerId = localStorage.getItem('homeownerId');
 
   // Fetch all services from the backend
   useEffect(() => {
@@ -38,6 +41,7 @@ export default () => {
       description: values.content,
       basePrice: values.price,
       duration: values.time,
+      homeownerId: homeownerId,
     };
 
     try {
@@ -47,7 +51,7 @@ export default () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newPost),
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -84,6 +88,35 @@ export default () => {
     } catch (error) {
       console.error('Detailed error:', error);
       message.error(`Failed to delete post. Detailed error: ${error.message}`);
+    }
+  };
+
+  // Mark job as finished
+  const handleMarkAsFinished = async (post) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/services/${post._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'finished' }),
+      });
+
+      if (response.ok) {
+        message.success('Job marked as finished');
+        setDataSource(
+          dataSource.map((item) =>
+            item._id === post._id ? { ...item, status: 'finished' } : item
+          )
+        );
+      } else {
+        const errorText = await response.text();
+        console.error('Error marking job as finished:', errorText);
+        message.error(`Failed to mark job as finished: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Detailed error:', error);
+      message.error(`Failed to mark job as finished. Detailed error: ${error.message}`);
     }
   };
 
@@ -151,6 +184,7 @@ export default () => {
               <>
                 <Tag>Price: {row.basePrice}</Tag>
                 <Tag>Duration: {row.duration}</Tag>
+                <Tag>Status: {row.status}</Tag>
               </>
             ),
           },
@@ -164,19 +198,31 @@ export default () => {
                     setCurrentPost(row);
                     setEditModalVisit(true);
                   }}
+                  disabled={row.status === 'finished'}
                 >
                   Edit
                 </Button>
-                <Popconfirm
-                  title="Are you sure you want to delete this post?"
-                  onConfirm={() => handleDelete(row._id)}
-                  okText="Yes"
-                  cancelText="No"
+                <Button
+                  type="link"
+                  icon={<DeleteOutlined />}
+                  danger
+                  disabled={row.status === 'finished'}
+                  onClick={() => handleDelete(row._id)}
                 >
-                  <Button type="link" icon={<DeleteOutlined />} danger>
-                    Delete
-                  </Button>
-                </Popconfirm>
+                  Delete
+                </Button>
+                {row.status === 'in progress' && (
+                  <Popconfirm
+                    title="Are you sure you want to mark this job as finished?"
+                    onConfirm={() => handleMarkAsFinished(row)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button type="link" icon={<CheckOutlined />} style={{ color: 'green' }}>
+                      Finish
+                    </Button>
+                  </Popconfirm>
+                )}
               </div>
             ],
           },
