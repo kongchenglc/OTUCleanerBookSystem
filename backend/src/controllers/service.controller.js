@@ -39,47 +39,47 @@ const createService = asyncHandler(async(req,res) => {
 const getAllServices = asyncHandler(async(req, res)=>{
   try {
     // add for v2 of code 
-    const query = req.user.role === 'homeowner' ? { homeownerId: req.user._id } : { cleanerId: req.user._id };
-    const services = await Service.find({query});
+    // const query = req.user.role === 'homeowner' ? { homeownerId: req.user._id } : { cleanerId: req.user._id };
+    // const services = await Service.find({query});
     // v2 stop 
     
     // v1 code commented
-    // const services = await Service.find({query});
+    const services2 = await Service.find({});
     return res
     .status(200)
     .json(
-      new ApiResponse(200, services)
+      new ApiResponse(200, services2)
     )
   } catch (error) {
     throw new ApiError(500, error?.message || "Error fetching Services")
   }
 })
 
-const getServiceById = asyncHandler(async(req, res) => {
-  const { serviceId } = req.params;
-try {
-    const service = await Service.findById(serviceId);
-    if(!service){
-      throw new ApiError(404, "service does not exist")
-    }
+// const getServiceById = asyncHandler(async(req, res) => {
+//   const { serviceId } = req.params;
+// try {
+//     const service = await Service.findById(serviceId);
+//     if(!service){
+//       throw new ApiError(404, "service does not exist")
+//     }
 
-    if (req.user.role === 'homeowner' && service.homeownerId.toString() !== req.user._id.toString()) {
-      throw new ApiError(403, "Access denied");
-    }
+//     if (req.user.role === 'homeowner' && service.homeownerId.toString() !== req.user._id.toString()) {
+//       throw new ApiError(403, "Access denied");
+//     }
 
-    if (req.user.role === 'cleaner' && service.cleanerId?.toString() !== req.user._id.toString()) {
-      throw new ApiError(403, "Access denied");
-    }
+//     if (req.user.role === 'cleaner' && service.cleanerId?.toString() !== req.user._id.toString()) {
+//       throw new ApiError(403, "Access denied");
+//     }
 
-    return res
-    .status(200)
-    .json(
-      new ApiResponse(200,service,"service by id true")
-    )
-} catch (error) {
-  throw new ApiError(500, error?.message || 'error fetching service')
-}
-})
+//     return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(200,service,"service by id true")
+//     )
+// } catch (error) {
+//   throw new ApiError(500, error?.message || 'error fetching service')
+// }
+// })
 
 // Acc . to v2 code :- only landlord can update the service to finished, while a cleaner can only update it to progress
 const updateService =  asyncHandler(async(req,res) => {
@@ -105,15 +105,29 @@ const updateService =  asyncHandler(async(req,res) => {
       .status(200)
       .json(new ApiResponse(200,"Service updated successfully", updatedService))
       
-  } catch (error) {
-    throw new ApiError(500, error?.message || "Error updating Service" ) 
-  }
-})
+    } catch (error) {
+      throw new ApiError(500, error?.message || "Error updating Service" ) 
+    }
+  })
+
+  // allow cleaners to view the available services 
+  const getAvailableServiceForCleaner = asyncHandler(async (req, res)=> {
+    try {
+      const services = await Service.find({ status: 'waiting cleaner'});
+    
+      return res
+      .status(200)
+      .json(new ApiResponse(200, services, "Available services fetched"));
+    } catch (error) {
+      throw new ApiError(500, error?.message || "Error fetching available services");
+    }
+  })
 
 // cleaner choose a service 
 const chooseServiceToWorkOn = asyncHandler(async(req,res)=>{
   const {serviceId} = req.params;
   const cleanerId = req.user._id;
+  console.log({cleanerId})
 
   try {
     // find the service by ID
@@ -143,18 +157,6 @@ const chooseServiceToWorkOn = asyncHandler(async(req,res)=>{
   }
 })
 
-// allow cleaners to view the available services 
-const getAvailableServiceForCleaner = asyncHandler(async (req, res)=> {
-  try {
-    const services = await Service.find({ status: 'waiting cleaner'});
-  
-    return res
-    .status(200)
-    .json(new ApiResponse(200, services, "Available services fetched"));
-  } catch (error) {
-    throw new ApiError(500, error?.message || "Error fetching available services");
-  }
-})
 
 const deleteService = asyncHandler(async (req,res) => {
   const {serviceId} = req.params;
@@ -179,7 +181,7 @@ const deleteService = asyncHandler(async (req,res) => {
 export {
   createService,
   getAllServices,
-  getServiceById,
+  // getServiceById,
   updateService,
   chooseServiceToWorkOn,
   getAvailableServiceForCleaner,
