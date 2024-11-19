@@ -174,7 +174,10 @@ export default () => {
         itemLayout="vertical"
         rowKey="_id"
         headerTitle="Post List"
-        dataSource={dataSource}
+        dataSource={dataSource.sort((a, b) => {
+          const statusOrder = ['waiting cleaner', 'in progress', 'finished'];
+          return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+        })}
         metas={{
           title: {
             dataIndex: 'name',
