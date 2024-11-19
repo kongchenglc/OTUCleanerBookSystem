@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { createService,
   getAllServices,
-  // getServiceById,
+  getServiceById,
   updateService,
   getAvailableServiceForCleaner,
   chooseServiceToWorkOn,
@@ -11,8 +11,8 @@ const router =  Router()
 
 //  all routes for landlord
 router.route('/create').post(verifyJWT,createService);
-router.route('/getAllServices').get(getAllServices);
-// router.route('/:serviceId').get(getServiceById);
+router.route('/getAllServices').get(verifyJWT, getAllServices);
+router.route('/:serviceId').get(getServiceById);
 router.route('/:serviceId').put(updateService);
 router.route('/:serviceId').delete(deleteService);
 
