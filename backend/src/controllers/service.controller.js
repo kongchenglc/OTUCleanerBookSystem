@@ -100,7 +100,7 @@ const updateService =  asyncHandler(async(req,res) => {
   try {
     const updatedService = await Service.findByIdAndUpdate(
       serviceId,
-      { name, description, basePrice, duration},
+      { name, description, basePrice, duration, status},
       {
         new:true, runValidators:true
       }

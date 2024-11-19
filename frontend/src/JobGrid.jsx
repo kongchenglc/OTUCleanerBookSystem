@@ -1,4 +1,3 @@
-// JobGrid.jsx
 import React, { useState, useEffect } from "react";
 import "./JobGrid.css";
 
@@ -10,6 +9,7 @@ const JobGrid = ({ filters }) => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
 
+  // Fetch jobs from the backend and filter by status
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -22,8 +22,10 @@ const JobGrid = ({ filters }) => {
         }
 
         const result = await response.json();
-        setAllJobs(result.data || []);
-        setFilteredJobs(result.data || []);
+        // Filter jobs by status "waiting cleaner"
+        const waitingCleanerJobs = result.data.filter((job) => job.status === "waiting cleaner");
+        setAllJobs(waitingCleanerJobs);
+        setFilteredJobs(waitingCleanerJobs);
       } catch (error) {
         console.error("Detailed Error:", error);
       }
@@ -32,6 +34,7 @@ const JobGrid = ({ filters }) => {
     fetchJobs();
   }, [userId]);
 
+  // Filter jobs based on user input
   useEffect(() => {
     const updatedJobs = allJobs.filter((job) => {
       const titleMatch = filters.title
@@ -63,41 +66,33 @@ const JobGrid = ({ filters }) => {
   const handleGetJob = async () => {
     if (!selectedJob) return;
 
-    const bookingData = {
-      landlordId: "landlord-id-here",
-      cleanerId: userId,
-      service: {
-        serviceId: selectedJob._id,
-        name: selectedJob.name,
-        rate: selectedJob.basePrice,
-      },
-      bookingDate: new Date().toISOString(),
-      totalPrice: selectedJob.basePrice,
-      specialInstructions: "Add any special instructions here",
-      status: "Pending",
-    };
-
     try {
-      const response = await fetch("http://localhost:8000/api/v1/booking/createBooking", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-        body: JSON.stringify(bookingData),
-      });
+      const response = await fetch(
+        `http://localhost:8000/api/v1/services/${selectedJob._id}/choose`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
 
       if (response.ok) {
-        console.log("Booking created successfully");
-        alert("Booking created successfully");
+        console.log("Job status updated to 'in progress'");
+        alert("Job has been successfully claimed and is now in progress.");
+        // Optionally refresh job list after successful action
+        setAllJobs(allJobs.filter((job) => job._id !== selectedJob._id));
+        setFilteredJobs(filteredJobs.filter((job) => job._id !== selectedJob._id));
+        setSelectedJob(null);
       } else {
         const errorText = await response.text();
-        console.error("Failed to create booking:", errorText);
-        alert(`Failed to create booking: ${errorText}`);
+        console.error("Failed to update job status:", errorText);
+        alert(`Failed to update job status: ${errorText}`);
       }
     } catch (error) {
-      console.error("Error creating booking:", error);
-      alert(`Error creating booking: ${error.message}`);
+      console.error("Error updating job status:", error);
+      alert(`Error updating job status: ${error.message}`);
     }
   };
 

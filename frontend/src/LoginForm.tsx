@@ -31,11 +31,12 @@ export default () => {
 
       if (response.ok) {
         const { accessToken, user } = data.data;
-        const { role } = user;
+        const { role, _id } = user; // 提取 homeownerId 或 userId
 
-        // Store token and user info in localStorage
+        // Store token, user info, and homeownerId in localStorage
         localStorage.setItem('authToken', accessToken);
         localStorage.setItem('userInfo', JSON.stringify(user));
+        localStorage.setItem('homeownerId', _id); // 单独存储 homeownerId
 
         message.success('Login Successful!');
 
