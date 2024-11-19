@@ -14,13 +14,14 @@ type RegisterFormValues = {
 };
 
 export default () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const handleRegister = async (values: RegisterFormValues) => {
     const { username, password, lastname, firstname, email, role } = values;
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/users/register', {
+      const response = await fetch(`${API_URL}/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

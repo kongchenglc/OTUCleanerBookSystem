@@ -8,12 +8,13 @@ const JobGrid = ({ filters }) => {
   const [allJobs, setAllJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Fetch jobs from the backend and filter by status
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/v1/services/getAllServices`);
+        const response = await fetch(`${API_URL}/services/getAllServices`);
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -68,7 +69,7 @@ const JobGrid = ({ filters }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/services/${selectedJob._id}/choose`,
+        `${API_URL}/services/${selectedJob._id}/choose`,
         {
           method: "PUT",
           headers: {

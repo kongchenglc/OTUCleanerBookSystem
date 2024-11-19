@@ -9,6 +9,8 @@ export default () => {
   const [editModalVisit, setEditModalVisit] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
   const [dataSource, setDataSource] = useState([]);
+  const API_URL = import.meta.env.VITE_API_URL;
+
 
   // 获取存储在浏览器中的 homeownerId
   const homeownerId = localStorage.getItem('homeownerId');
@@ -17,7 +19,7 @@ export default () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/services/getAllServices');
+        const response = await fetch(`${API_URL}/services/getAllServices`);
         const result = await response.json();
         if (response.ok) {
           setDataSource(result.data || []);
@@ -45,7 +47,7 @@ export default () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/services/create', {
+      const response = await fetch(`${API_URL}/services/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +75,7 @@ export default () => {
   // Delete post
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/services/${id}`, {
+      const response = await fetch(`${API_URL}/services/${id}`, {
         method: 'DELETE',
       });
 
@@ -94,7 +96,7 @@ export default () => {
   // Mark job as finished
   const handleMarkAsFinished = async (post) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/services/${post._id}`, {
+      const response = await fetch(`${API_URL}/services/${post._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +132,7 @@ export default () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/services/${currentPost._id}`, {
+      const response = await fetch(`${API_URL}/services/${currentPost._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

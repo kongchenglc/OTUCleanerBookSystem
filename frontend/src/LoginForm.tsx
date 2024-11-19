@@ -9,12 +9,12 @@ type LoginType = 'phone' | 'account';
 export default () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
-
-  const API_URL = 'http://localhost:8000/api/v1/users/login';
+  const API_URL = import.meta.env.VITE_API_URL;
+  console.log(import.meta.env.VITE_API_URL); // 确保这里输出正确的 URL
 
   const handleLogin = async (values: any) => {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
