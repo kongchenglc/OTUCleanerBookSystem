@@ -105,7 +105,7 @@ const deleteAvailability = asyncHandler(async(req,res) => {
     if(!deleteAvailability){
       throw new ApiError(404, " Availability not found")
     }
-  
+
     return res
     .status(200)
     .json(
@@ -121,7 +121,6 @@ const deleteAvailability = asyncHandler(async(req,res) => {
   } catch (error) {
     throw new ApiError(500, error?.message || "Error deleting availability")
   }
-
 })
 
 export {
