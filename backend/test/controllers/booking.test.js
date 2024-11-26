@@ -1,12 +1,34 @@
 import * as chai from 'chai'
 import chaiHttp from 'chai-http'
 import { createBooking, getLandlordBookings, getBookingById, updateBookingById } from '../../src/controllers/booking.controller.js'
+import mongoose from 'mongoose'
 import { Booking } from '../../src/models/booking.model.js'
 
 chai.use(chaiHttp);
 const { expect } = chai;
 // describe function used to group and organise related test cases 
 //  so easy to organize the tests
+
+// connect to the test database before running tests
+before((done)=>{
+  mongoose.connect('mongodb+srv://karan:sxGEi7flOaBFwtPO@cluster0.71axo.mongodb.net/OTUCleanerBookSystemDemo'  ,{
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  
+  );
+  mongoose.connection.once('open', () => {
+    console.log("under connection")
+    done()
+  })
+})
+
+// disconnect from the database after all test
+console.log("working disconnect")
+after((done) => {
+  mongoose.connection.close(()=> done());
+})
+
 describe("Booking Controller Tests", () => {
   // Sample Data Mocks
   const mockService = {
