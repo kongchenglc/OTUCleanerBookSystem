@@ -22,6 +22,11 @@ export default () => {
       try {
         const response = await fetch(`${API_URL}/services/getAllServices`, {
           method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          mode: 'cors',
           credentials: 'include',
         });
         const result = await response.json();
@@ -55,9 +60,11 @@ export default () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-        body: JSON.stringify(newPost),
+        mode: 'cors',
         credentials: 'include',
+        body: JSON.stringify(newPost),
       });
 
       if (response.ok) {
@@ -81,6 +88,11 @@ export default () => {
     try {
       const response = await fetch(`${API_URL}/services/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        mode: 'cors',
         credentials: 'include',
       });
 
@@ -103,10 +115,12 @@ export default () => {
     try {
       const response = await fetch(`${API_URL}/services/${post._id}`, {
         method: 'PUT',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify({ status: 'finished' }),
       });
 
@@ -140,10 +154,12 @@ export default () => {
     try {
       const response = await fetch(`${API_URL}/services/${currentPost._id}`, {
         method: 'PUT',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(updatedPost),
       });
 

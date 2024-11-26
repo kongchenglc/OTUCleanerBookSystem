@@ -26,7 +26,10 @@ export default () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify({ username, password, lastname, firstname, email, role }), // 使用 role
       });
 
