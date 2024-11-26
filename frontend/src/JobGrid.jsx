@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./JobGrid.css";
+import { VITE_API_URL } from "./constant";
 
 const JobGrid = ({ filters }) => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -8,7 +9,7 @@ const JobGrid = ({ filters }) => {
   const [allJobs, setAllJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = VITE_API_URL;
 
   // Fetch jobs from the backend and filter by status
   useEffect(() => {

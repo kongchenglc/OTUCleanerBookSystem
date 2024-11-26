@@ -1,15 +1,16 @@
 import { PlusOutlined, DeleteOutlined, EditOutlined, CheckOutlined } from '@ant-design/icons';
 import { ProList, ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, Tag, message, Popconfirm, Card } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './Header';
+import { VITE_API_URL } from './constant';
 
 export default () => {
   const [modalVisit, setModalVisit] = useState(false);
   const [editModalVisit, setEditModalVisit] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
   const [dataSource, setDataSource] = useState([]);
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = VITE_API_URL;
 
 
   // 获取存储在浏览器中的 homeownerId
@@ -19,8 +20,8 @@ export default () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`${API_URL}/services/getAllServices`,{
-          method: 'POST',
+        const response = await fetch(`${API_URL}/services/getAllServices`, {
+          method: 'GET',
           credentials: 'include',
         });
         const result = await response.json();
