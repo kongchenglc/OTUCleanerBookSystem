@@ -19,7 +19,10 @@ export default () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`${API_URL}/services/getAllServices`);
+        const response = await fetch(`${API_URL}/services/getAllServices`,{
+          method: 'POST',
+          credentials: 'include',
+        });
         const result = await response.json();
         if (response.ok) {
           setDataSource(result.data || []);
@@ -77,6 +80,7 @@ export default () => {
     try {
       const response = await fetch(`${API_URL}/services/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -98,6 +102,7 @@ export default () => {
     try {
       const response = await fetch(`${API_URL}/services/${post._id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -134,6 +139,7 @@ export default () => {
     try {
       const response = await fetch(`${API_URL}/services/${currentPost._id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

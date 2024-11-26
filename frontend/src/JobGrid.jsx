@@ -14,7 +14,10 @@ const JobGrid = ({ filters }) => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch(`${API_URL}/services/getAllServices`);
+        const response = await fetch(`${API_URL}/services/getAllServices`, {
+          method: "GET",
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.text();
