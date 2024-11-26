@@ -15,7 +15,7 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 app.use(cors(
-  credentials: true,
+  { credentials: true, }
 ));
 app.options('*', cors());
 
