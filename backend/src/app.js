@@ -4,8 +4,19 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
+const allowedOrigins = [
+  'http://cleaner-book-system.s3-website.us-east-2.amazonaws.com',
+  'https://cleaner-book-system.s3-website.us-east-2.amazonaws.com',
+];
+
 app.use(cors({
-  origin: "*",
+  origin: (ctx) => {
+    const origin = ctx.origin;
+    if (allowedOrigins.includes(origin) || origin.endsWith('.amazonaws.com')) {
+      return origin;
+    }
+    return '*';
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
