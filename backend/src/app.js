@@ -4,24 +4,6 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
-const allowedOrigins = [
-  'http://cleaner-book-system.s3-website.us-east-2.amazonaws.com',
-  'https://cleaner-book-system.s3-website.us-east-2.amazonaws.com',
-];
-
-app.use(cors({
-  origin: (ctx) => {
-    const origin = ctx.origin;
-    if (allowedOrigins.includes(origin) || origin.endsWith('.amazonaws.com')) {
-      return origin;
-    }
-    return '*';
-  },
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}));
-
 // 3 main app configurations
 // setting limit for json data for production
 app.use(express.json({ limit: "16kb" }))
@@ -31,6 +13,10 @@ app.use(express.urlencoded({ exntended: true, limit: "16kb" }))
 app.use(express.static("public"))
 // access and use user cookies, apply CRUD operations
 app.use(cookieParser())
+
+app.use(cors(
+  credentials: true,
+));
 
 // routes import 
 import userRouter from './routes/user.routes.js'
