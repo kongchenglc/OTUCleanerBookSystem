@@ -1,14 +1,17 @@
 import { PlusOutlined, DeleteOutlined, EditOutlined, CheckOutlined } from '@ant-design/icons';
 import { ProList, ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import { Button, Tag, message, Popconfirm, Card } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './Header';
+import { VITE_API_URL } from './constant';
 
 export default () => {
   const [modalVisit, setModalVisit] = useState(false);
   const [editModalVisit, setEditModalVisit] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
   const [dataSource, setDataSource] = useState([]);
+  const API_URL = VITE_API_URL;
+
 
   // 获取存储在浏览器中的 homeownerId
   const homeownerId = localStorage.getItem('homeownerId');
@@ -17,7 +20,10 @@ export default () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/services/getAllServices');
+        const response = await fetch(`${API_URL}/services/getAllServices`, {
+          method: 'GET',
+          credentials: 'include',
+        });
         const result = await response.json();
         if (response.ok) {
           setDataSource(result.data || []);
@@ -45,7 +51,7 @@ export default () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/services/create', {
+      const response = await fetch(`${API_URL}/services/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,8 +79,9 @@ export default () => {
   // Delete post
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/services/${id}`, {
+      const response = await fetch(`${API_URL}/services/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -94,8 +101,9 @@ export default () => {
   // Mark job as finished
   const handleMarkAsFinished = async (post) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/services/${post._id}`, {
+      const response = await fetch(`${API_URL}/services/${post._id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -130,8 +138,9 @@ export default () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/services/${currentPost._id}`, {
+      const response = await fetch(`${API_URL}/services/${currentPost._id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

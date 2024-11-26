@@ -3,18 +3,18 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { VITE_API_URL } from './constant';
 
 type LoginType = 'phone' | 'account';
 
 export default () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
-
-  const API_URL = 'http://localhost:8000/api/v1/users/login';
+  const API_URL = VITE_API_URL;
 
   const handleLogin = async (values: any) => {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
