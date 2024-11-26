@@ -18,12 +18,14 @@ export default () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify({
           username: values.username,
           password: values.password,
-        }),
-        credentials: 'include', // 允许携带 cookie
+        })
       });
 
       const data = await response.json();

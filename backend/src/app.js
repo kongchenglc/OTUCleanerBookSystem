@@ -5,11 +5,11 @@ import cookieParser from "cookie-parser"
 const app = express()
 
 app.use(cors({
-  // origin you are allowing
-  // origin: process.env.CORS_ORIGIN,
-  origin: 'http://localhost:5173',
-  credentials: true
-}))
+  origin: "*",
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 
 // 3 main app configurations
 // setting limit for json data for production

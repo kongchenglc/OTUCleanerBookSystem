@@ -17,6 +17,11 @@ const JobGrid = ({ filters }) => {
       try {
         const response = await fetch(`${API_URL}/services/getAllServices`, {
           method: "GET",
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          mode: 'cors',
           credentials: "include",
         });
 
@@ -77,9 +82,11 @@ const JobGrid = ({ filters }) => {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
+          mode: 'cors',
+          credentials: 'include',
         }
       );
 
