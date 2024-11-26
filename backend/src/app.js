@@ -17,6 +17,7 @@ app.use(cookieParser())
 app.use(cors(
   credentials: true,
 ));
+app.options('*', cors());
 
 // routes import 
 import userRouter from './routes/user.routes.js'
