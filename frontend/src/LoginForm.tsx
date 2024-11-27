@@ -36,7 +36,7 @@ export default () => {
         const { role, _id } = user; // 提取 homeownerId 或 userId
 
         // Store token, user info, and homeownerId in localStorage
-        localStorage.setItem('authToken', accessToken);
+        localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('userInfo', JSON.stringify(user));
         localStorage.setItem('homeownerId', _id); // 单独存储 homeownerId
 
