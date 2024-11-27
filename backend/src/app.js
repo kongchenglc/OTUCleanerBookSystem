@@ -14,10 +14,14 @@ app.use(express.static("public"))
 // access and use user cookies, apply CRUD operations
 app.use(cookieParser())
 
-app.use(cors(
-  { credentials: true, }
-));
-app.options('*', cors());
+const corsOptions = {
+  origin: 'http://cleaner-book-system.s3-website.us-east-2.amazonaws.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // routes import 
 import userRouter from './routes/user.routes.js'
